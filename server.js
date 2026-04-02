@@ -287,6 +287,50 @@ app.post("/v1/payhip/webhook", (req, res) => {
   });
 });
 
+app.post("/v1/licenses/find-by-email", (req, res) => {
+  const { email } = req.body || {};
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing email"
+    });
+  }
+
+  const cleanEmail = String(email).toLowerCase().trim();
+  const db = readLicenses();
+
+  const matches = Object.entries(db.licenses)
+    .map(([licenseKey, data]) => ({ licenseKey, ...data }))
+    .filter(item => String(item.buyerEmail || "").toLowerCase().trim() === cleanEmail)
+    .sort((a, b) => {
+      const aTime = new Date(a.createdAt || 0).getTime();
+      const bTime = new Date(b.createdAt || 0).getTime();
+      return bTime - aTime;
+    });
+
+  if (matches.length === 0) {
+    return res.status(404).json({
+      success: false,
+      message: "No license found for that email"
+    });
+  }
+
+  const latest = matches[0];
+
+  return res.json({
+    success: true,
+    license: {
+      licenseKey: latest.licenseKey,
+      tier: latest.tier,
+      framework: latest.framework,
+      buyerEmail: latest.buyerEmail || "",
+      createdAt: latest.createdAt || "",
+      source: latest.source || ""
+    }
+  });
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} - generator + payhip webhook enabled`);
+  console.log(`Server running on port ${PORT} - generator + payhip webhook + admin key viewer enabled`);
 });
