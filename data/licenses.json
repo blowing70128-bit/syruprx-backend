@@ -47,6 +47,168 @@
       "tier": "demo",
       "framework": "qbox",
       "uses": 0
+    },
+    "SRX-DEMO-QB-002": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-002": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-002": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-003": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-003": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-003": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-004": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-004": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-004": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-005": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-005": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-005": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-006": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-006": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-006": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-007": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-007": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-007": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-008": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-008": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-008": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-009": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-009": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-009": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-010": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-010": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-010": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
+      "uses": 0
     }
   }
 }
