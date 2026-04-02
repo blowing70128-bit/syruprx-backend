@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -130,7 +131,65 @@ app.post("/v1/licenses/validate", (req, res) => {
   });
 });
 
+app.post("/v1/licenses/generate", (req, res) => {
+  const { tier, framework } = req.body || {};
+
+  if (!tier || !framework) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing tier or framework"
+    });
+  }
+
+  const cleanTier = String(tier).toLowerCase().trim();
+  const cleanFramework = String(framework).toLowerCase().trim();
+
+  const prefixMap = {
+    demo: "DEMO",
+    pro: "PRO",
+    master: "MASTER",
+    ultimate: "ULT"
+  };
+
+  const frameworkMap = {
+    qbcore: "QB",
+    esx: "ESX",
+    qbox: "QBOX"
+  };
+
+  const tierPrefix = prefixMap[cleanTier];
+  const frameworkPrefix = frameworkMap[cleanFramework];
+
+  if (!tierPrefix || !frameworkPrefix) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid tier or framework"
+    });
+  }
+
+  const db = readLicenses();
+
+  let licenseKey = "";
+  do {
+    const randomPart = crypto.randomBytes(3).toString("hex").toUpperCase();
+    licenseKey = `SRX-${tierPrefix}-${frameworkPrefix}-${randomPart}`;
+  } while (db.licenses[licenseKey]);
+
+  db.licenses[licenseKey] = {
+    active: true,
+    tier: cleanTier,
+    framework: cleanFramework,
+    uses: 0
+  };
+
+  writeLicenses(db);
+
+  return res.json({
+    success: true,
+    licenseKey
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
