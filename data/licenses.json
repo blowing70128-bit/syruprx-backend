@@ -4,21 +4,13 @@
       "active": true,
       "tier": "ultimate",
       "framework": "qbcore",
-      "uses": 0,
-      "boundFingerprint": "TEST-PC-001",
-      "firstActivatedAt": "2026-04-02T11:11:42.008Z",
-      "lastValidatedAt": "2026-04-02T11:11:42.008Z",
-      "validationCount": 1
+      "uses": 0
     },
     "SRX-ULT-ESX-001": {
       "active": true,
       "tier": "ultimate",
       "framework": "esx",
-      "uses": 0,
-      "boundFingerprint": "TEST-PC-002",
-      "firstActivatedAt": "2026-04-02T11:12:42.239Z",
-      "lastValidatedAt": "2026-04-02T11:12:42.239Z",
-      "validationCount": 1
+      "uses": 0
     },
     "SRX-ULT-QBOX-001": {
       "active": true,
@@ -36,6 +28,24 @@
       "active": true,
       "tier": "pro",
       "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-QB-001": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbcore",
+      "uses": 0
+    },
+    "SRX-DEMO-ESX-001": {
+      "active": true,
+      "tier": "demo",
+      "framework": "esx",
+      "uses": 0
+    },
+    "SRX-DEMO-QBOX-001": {
+      "active": true,
+      "tier": "demo",
+      "framework": "qbox",
       "uses": 0
     }
   }
