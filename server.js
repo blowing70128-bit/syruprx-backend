@@ -331,6 +331,78 @@ app.post("/v1/licenses/find-by-email", (req, res) => {
   });
 });
 
+app.post("/v1/licenses/find-by-key", (req, res) => {
+  const { licenseKey } = req.body || {};
+
+  if (!licenseKey) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing licenseKey"
+    });
+  }
+
+  const db = readLicenses();
+  const key = String(licenseKey).trim();
+  const license = db.licenses[key];
+
+  if (!license) {
+    return res.status(404).json({
+      success: false,
+      message: "License not found"
+    });
+  }
+
+  return res.json({
+    success: true,
+    license: {
+      licenseKey: key,
+      active: license.active,
+      tier: license.tier,
+      framework: license.framework,
+      buyerEmail: license.buyerEmail || "",
+      validationCount: license.validationCount || 0,
+      boundFingerprint: license.boundFingerprint || "",
+      firstActivatedAt: license.firstActivatedAt || "",
+      lastValidatedAt: license.lastValidatedAt || "",
+      revokedAt: license.revokedAt || "",
+      source: license.source || ""
+    }
+  });
+});
+
+app.post("/v1/licenses/revoke", (req, res) => {
+  const { licenseKey } = req.body || {};
+
+  if (!licenseKey) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing licenseKey"
+    });
+  }
+
+  const db = readLicenses();
+  const key = String(licenseKey).trim();
+
+  if (!db.licenses[key]) {
+    return res.status(404).json({
+      success: false,
+      message: "License not found"
+    });
+  }
+
+  db.licenses[key].active = false;
+  db.licenses[key].revokedAt = new Date().toISOString();
+  db.licenses[key].source = db.licenses[key].source || "manual";
+
+  writeLicenses(db);
+
+  return res.json({
+    success: true,
+    message: "License revoked",
+    licenseKey: key
+  });
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} - generator + payhip webhook + admin key viewer enabled`);
+  console.log(`Server running on port ${PORT} - anti leak admin endpoints enabled`);
 });
