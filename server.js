@@ -402,7 +402,56 @@ app.post("/v1/licenses/revoke", (req, res) => {
     licenseKey: key
   });
 });
+// DOWNLOAD ACCESS ROUTE
+app.post("/v1/download", (req, res) => {
+  const { licenseKey, framework } = req.body || {};
 
+  if (!licenseKey || !framework) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing licenseKey or framework"
+    });
+  }
+
+  const db = readLicenses();
+  const key = String(licenseKey).trim();
+  const license = db.licenses[key];
+
+  if (!license) {
+    return res.status(404).json({
+      success: false,
+      message: "Invalid license"
+    });
+  }
+
+  if (!license.active) {
+    return res.status(403).json({
+      success: false,
+      message: "License inactive"
+    });
+  }
+
+  // DOWNLOAD LINKS
+  const downloads = {
+    qbcore: "https://drive.google.com/uc?export=download&id=1MSvCHYAtmayeDPUY9KrQ3bkthHH0pJyr",
+    esx: "https://drive.google.com/uc?export=download&id=145l1WFMV-9f7gTHDUlFjJDhqtEbaNOZr",
+    qbox: "https://drive.google.com/uc?export=download&id=1OvzWTvoI2aMDmYqjc5-i01bM-wdyi0Hr"
+  };
+
+  const selected = String(framework).toLowerCase();
+
+  if (!downloads[selected]) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid framework"
+    });
+  }
+
+  return res.json({
+    success: true,
+    download: downloads[selected]
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT} - anti leak admin endpoints enabled`);
 });
