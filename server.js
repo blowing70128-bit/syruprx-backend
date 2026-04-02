@@ -35,6 +35,36 @@ function writeLicenses(data) {
   fs.writeFileSync(LICENSES_FILE, JSON.stringify(data, null, 2));
 }
 
+function makeLicenseKey(tier, framework, db) {
+  const prefixMap = {
+    demo: "DEMO",
+    pro: "PRO",
+    master: "MASTER",
+    ultimate: "ULT"
+  };
+
+  const frameworkMap = {
+    qbcore: "QB",
+    esx: "ESX",
+    qbox: "QBOX"
+  };
+
+  const tierPrefix = prefixMap[tier];
+  const frameworkPrefix = frameworkMap[framework];
+
+  if (!tierPrefix || !frameworkPrefix) {
+    return null;
+  }
+
+  let licenseKey = "";
+  do {
+    const randomPart = crypto.randomBytes(3).toString("hex").toUpperCase();
+    licenseKey = `SRX-${tierPrefix}-${frameworkPrefix}-${randomPart}`;
+  } while (db.licenses[licenseKey]);
+
+  return licenseKey;
+}
+
 app.get("/", (req, res) => {
   res.json({
     ok: true,
@@ -144,42 +174,23 @@ app.post("/v1/licenses/generate", (req, res) => {
   const cleanTier = String(tier).toLowerCase().trim();
   const cleanFramework = String(framework).toLowerCase().trim();
 
-  const prefixMap = {
-    demo: "DEMO",
-    pro: "PRO",
-    master: "MASTER",
-    ultimate: "ULT"
-  };
+  const db = readLicenses();
+  const licenseKey = makeLicenseKey(cleanTier, cleanFramework, db);
 
-  const frameworkMap = {
-    qbcore: "QB",
-    esx: "ESX",
-    qbox: "QBOX"
-  };
-
-  const tierPrefix = prefixMap[cleanTier];
-  const frameworkPrefix = frameworkMap[cleanFramework];
-
-  if (!tierPrefix || !frameworkPrefix) {
+  if (!licenseKey) {
     return res.status(400).json({
       success: false,
       message: "Invalid tier or framework"
     });
   }
 
-  const db = readLicenses();
-
-  let licenseKey = "";
-  do {
-    const randomPart = crypto.randomBytes(3).toString("hex").toUpperCase();
-    licenseKey = `SRX-${tierPrefix}-${frameworkPrefix}-${randomPart}`;
-  } while (db.licenses[licenseKey]);
-
   db.licenses[licenseKey] = {
     active: true,
     tier: cleanTier,
     framework: cleanFramework,
-    uses: 0
+    uses: 0,
+    createdAt: new Date().toISOString(),
+    source: "manual-generator"
   };
 
   writeLicenses(db);
@@ -190,6 +201,92 @@ app.post("/v1/licenses/generate", (req, res) => {
   });
 });
 
+app.post("/v1/payhip/webhook", (req, res) => {
+  const payload = req.body || {};
+
+  const payhipApiKey = process.env.PAYHIP_API_KEY || "";
+  const expectedSignature = crypto
+    .createHash("sha256")
+    .update(payhipApiKey)
+    .digest("hex");
+
+  if (!payload.signature || payload.signature !== expectedSignature) {
+    return res.status(403).json({
+      success: false,
+      message: "Invalid Payhip signature"
+    });
+  }
+
+  if (payload.type !== "paid") {
+    return res.status(200).json({
+      success: true,
+      message: "Ignored non-paid event"
+    });
+  }
+
+  const item = Array.isArray(payload.items) && payload.items.length > 0
+    ? payload.items[0]
+    : null;
+
+  if (!item) {
+    return res.status(400).json({
+      success: false,
+      message: "No item found in Payhip payload"
+    });
+  }
+
+  const productName = String(item.product_name || "").toLowerCase();
+  const buyerEmail = String(payload.email || "").trim();
+
+  let tier = "";
+  let framework = "";
+
+  if (productName.includes("demo")) tier = "demo";
+  else if (productName.includes("pro")) tier = "pro";
+  else if (productName.includes("master")) tier = "master";
+  else if (productName.includes("ultimate")) tier = "ultimate";
+
+  if (productName.includes("qbcore")) framework = "qbcore";
+  else if (productName.includes("esx")) framework = "esx";
+  else if (productName.includes("qbox")) framework = "qbox";
+
+  if (!tier || !framework) {
+    return res.status(400).json({
+      success: false,
+      message: "Could not determine tier/framework from product name"
+    });
+  }
+
+  const db = readLicenses();
+  const licenseKey = makeLicenseKey(tier, framework, db);
+
+  if (!licenseKey) {
+    return res.status(400).json({
+      success: false,
+      message: "Could not generate license key"
+    });
+  }
+
+  db.licenses[licenseKey] = {
+    active: true,
+    tier,
+    framework,
+    uses: 0,
+    buyerEmail,
+    payhipSaleId: payload.id || null,
+    createdAt: new Date().toISOString(),
+    source: "payhip-webhook"
+  };
+
+  writeLicenses(db);
+
+  return res.status(200).json({
+    success: true,
+    message: "Webhook processed",
+    licenseKey
+  });
+});
+
 app.listen(PORT, () => {
- console.log(`Server running on port ${PORT} - generator enabled`);
+  console.log(`Server running on port ${PORT} - generator + payhip webhook enabled`);
 });
